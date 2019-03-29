@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import Users from './Users';
 import Nav from './Nav';
-import Home from './Home';
 import { HashRouter as Router, Route } from 'react-router-dom';
 
 export default class App extends Component {
