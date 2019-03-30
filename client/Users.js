@@ -1,7 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { deleteUser } from './store';
+import { connect } from 'react-redux';
 
-const Users = ({ users }) => {
+const mapDispatchToProps = dispatch => {
+  return { deleteUserFromList: user => dispatch(deleteUser(user)) };
+};
+
+const Users = ({ users, deleteUserFromList }) => {
   return (
     <ul className="list-group">
       {users.map(user => (
@@ -17,7 +23,12 @@ const Users = ({ users }) => {
             {`Ranked ${user.rank}`}
           </span>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <button className="btn btn-warning">Delete</button>
+            <button
+              className="btn btn-warning"
+              onClick={() => deleteUserFromList(user)}
+            >
+              Delete
+            </button>
             <Link to={`/users/${user.id}`}>Edit</Link>
           </div>
         </li>
@@ -26,4 +37,7 @@ const Users = ({ users }) => {
   );
 };
 
-export default Users;
+export default connect(
+  null,
+  mapDispatchToProps
+)(Users);

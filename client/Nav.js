@@ -11,6 +11,10 @@ const Nav = ({ topUsers, location: { pathname } }) => {
       title: 'Users',
       path: '/users',
     },
+    {
+      title: 'Create A User',
+      path: '/users/create',
+    },
   ];
   if (topUsers) {
     tabs.push({

@@ -1,29 +1,27 @@
 import React, { Component, Fragment } from 'react';
-import axios from 'axios';
 import Users from './Users';
 import Nav from './Nav';
+import CreateUser from './CreateUser';
 import { HashRouter as Router, Route } from 'react-router-dom';
+import { fetchUsers } from './store';
+import { connect } from 'react-redux';
 
-export default class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      users: [],
-    };
-  }
+//map the state from our store to the props for the app component
+const mapStateToProps = state => {
+  return { users: state.users };
+};
+
+//map the dispatch capabilities from our store to the the props for the app component
+const mapDispatchToProps = dispatch => {
+  return { fetchInitialUsers: () => dispatch(fetchUsers()) };
+};
+
+class App extends Component {
   componentDidMount() {
-    this.loadUsers();
+    this.props.fetchInitialUsers();
   }
-  loadUsers = () => {
-    axios
-      .get('/api/users')
-      .then(response => response.data)
-      .then(users => {
-        this.setState({ users });
-      });
-  };
   render() {
-    const { users } = this.state;
+    const { users } = this.props;
     let topUsers;
     if (users.length) {
       topUsers = users.filter(
@@ -59,6 +57,11 @@ export default class App extends Component {
           <Route exact path="/users" render={() => <Users users={users} />} />
           <Route
             exact
+            path="/users/create"
+            render={({ history }) => <CreateUser history={history} />}
+          />
+          <Route
+            exact
             path="/users/topRanked"
             render={() => <Users users={topUsers ? topUsers : users} />}
           />
@@ -67,3 +70,8 @@ export default class App extends Component {
     );
   }
 }
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
