@@ -27,7 +27,6 @@ app.put('/api/users/:id', (req, res, next) => {
 });
 
 app.post('/api/users', (req, res, next) => {
-  console.log(req.body);
   User.create(req.body)
     .then(user => {
       res.send(user);
@@ -53,9 +52,15 @@ app.use((req, res, next) => {
   next(err);
 });
 
-app.use((err, req, res, next) => {
-  res.status(err.status || 500);
-  res.send(err.message || 'Internal Error Message');
+//Used prof approach to capture each error and display
+app.use((error, req, res, next) => {
+  let errors = [error];
+  if (error.errors) {
+    errors = error.errors.map(error => error.message);
+  } else if (error.original) {
+    errors = [error.original.message];
+  }
+  res.status(error.status || 500).send({ errors });
 });
 
 module.exports = app;

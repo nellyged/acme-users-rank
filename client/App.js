@@ -1,8 +1,8 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import Users from './Users';
 import Nav from './Nav';
 import CreateUser from './CreateUser';
-import { HashRouter as Router, Route } from 'react-router-dom';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { fetchUsers } from './store';
 import { connect } from 'react-redux';
 
@@ -22,23 +22,16 @@ class App extends Component {
   }
   render() {
     const { users } = this.props;
-    let topUsers;
-    if (users.length) {
-      topUsers = users.filter(
-        user =>
-          user.rank ===
-          users.reduce(
-            (acc, userRank) => {
-              if (userRank.rank < acc.top) {
-                acc.top = user.rank;
-              }
-              return acc;
-            },
-            { top: users[0].rank }
-          ).top
-      );
-    }
-
+    const topRank = users.reduce(
+      (acc, userRank) => {
+        if (userRank.rank < acc.top) {
+          acc.top = userRank.rank;
+        }
+        return acc;
+      },
+      { top: users[0] ? users[0].rank : 0 }
+    ).top;
+    const topUsers = users.filter(user => user.rank === topRank);
     return (
       <Router>
         <div>
@@ -46,25 +39,45 @@ class App extends Component {
           <br />
           <Route
             render={({ location }) => (
-              <Nav location={location} topUsers={topUsers ? topUsers : false} />
+              <Nav
+                location={location}
+                topUsers={topUsers.length ? topUsers : false}
+              />
             )}
           />
           <Route
             exact
             path="/"
-            render={() => <Fragment>We have {users.length} Users!</Fragment>}
-          />
-          <Route exact path="/users" render={() => <Users users={users} />} />
-          <Route
-            exact
-            path="/users/create"
-            render={({ history }) => <CreateUser history={history} />}
+            render={() => <div>We have {users.length} Users!</div>}
           />
           <Route
             exact
-            path="/users/topRanked"
-            render={() => <Users users={topUsers ? topUsers : users} />}
+            path="/users"
+            render={() => (
+              <Users users={users.sort((a, b) => a.rank - b.rank)} />
+            )}
           />
+          <Switch>
+            <Route
+              path="/users/create"
+              exact
+              render={({ history }) => <CreateUser history={history} />}
+            />
+            <Route
+              path="/users/topRanked"
+              render={() => <Users users={topUsers ? topUsers : users} />}
+            />
+            <Route
+              path="/users/:id"
+              render={({ history, match }) => (
+                <CreateUser
+                  history={history}
+                  id={match.params.id}
+                  user={users.find(user => user.id === match.params.id * 1)}
+                />
+              )}
+            />
+          </Switch>
         </div>
       </Router>
     );

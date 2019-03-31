@@ -4,9 +4,22 @@ const conn = new Sequelize(process.env.DATABASE_URL, {
 });
 
 const User = conn.define('user', {
-  name: { type: Sequelize.STRING, allowNull: false },
-  bio: Sequelize.TEXT,
-  rank: Sequelize.INTEGER,
+  name: {
+    type: Sequelize.STRING,
+    unique: true,
+    allowNull: false,
+    validate: { notEmpty: false },
+  },
+  bio: {
+    type: Sequelize.TEXT,
+    allowNull: false,
+    validate: { notEmpty: false },
+  },
+  rank: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    validate: { notEmpty: false, min: 1 },
+  },
 });
 
 const syncAndSeed = () => {
