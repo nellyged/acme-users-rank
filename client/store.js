@@ -7,6 +7,7 @@ const DELETE_USER = 'DELETE_USER';
 const CREATE_USER = 'CREATE_USER';
 const USER_EDITED = 'USER_EDITED';
 const USER_FORM_ERROR = 'USER_FORM_ERROR';
+const CLEAR_USER_FORM_ERROR = 'CLEAR_USER_FORM_ERROR';
 
 const gotUsersFromServer = users => {
   return {
@@ -40,6 +41,12 @@ const errorsOnSave = errors => {
   return {
     type: USER_FORM_ERROR,
     errors,
+  };
+};
+
+const clearErrors = () => {
+  return {
+    type: CLEAR_USER_FORM_ERROR,
   };
 };
 
@@ -114,6 +121,8 @@ const reducer = (state = initialState, action) => {
       };
     case USER_FORM_ERROR:
       return { ...state, userFormErrors: action.errors };
+    case CLEAR_USER_FORM_ERROR:
+      return { ...state, userFormErrors: [] };
     default:
       return state;
   }
@@ -121,4 +130,4 @@ const reducer = (state = initialState, action) => {
 
 const store = createStore(reducer, applyMiddleware(thunk));
 
-export { store, fetchUsers, deleteUser, createEditUser };
+export { store, fetchUsers, deleteUser, createEditUser, clearErrors };

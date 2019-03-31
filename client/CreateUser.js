@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { createEditUser } from './store';
+import { createEditUser, clearErrors } from './store';
 import { connect } from 'react-redux';
 
 const mapStateToProps = state => {
@@ -11,6 +11,7 @@ const mapDispatchToProps = dispatch => {
   return {
     createOrEditUser: (user, history) =>
       dispatch(createEditUser(user, history)),
+    clearErrors: () => dispatch(clearErrors()),
   };
 };
 
@@ -32,6 +33,10 @@ export class CreateUser extends Component {
         rank: user ? user.rank : '',
       };
     }
+  }
+  componentDidMount() {
+    //make sure errors are cleared on a new create form
+    this.props.clearErrors();
   }
   componentDidUpdate(prevProps) {
     if (this.props.id && !prevProps.user && this.props.user) {
